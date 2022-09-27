@@ -1,0 +1,31 @@
+key:
+  path: .dag/test.p12
+  alias: test-alias
+  password: test-password
+seedlist:
+  path: .dag/seedlist.csv
+tessellation:
+  version: v0.27.0
+github:
+  organization: Constellation-Labs
+  repository: tessellation
+  l0-filename: cl-node.jar
+  l1-filename: cl-dag-l1.jar
+l0:
+  path: .dag/l0.jar
+  java:
+    xmx: 10G
+  load-balancer: https://l0-lb-testnet.constellationnetwork.io
+  port:
+    public: 9000
+    p2p: 9001
+    cli: 9002
+l1:
+  path: .dag/l1.jar
+  java:
+    xmx: 4G
+  load-balancer: https://l1-lb-testnet.constellationnetwork.io
+  port:
+    public: 9010
+    p2p: 9011
+    cli: 9012
