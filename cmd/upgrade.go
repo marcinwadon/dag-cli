@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"dag-cli/pkg/config"
 	"dag-cli/pkg/node"
 	"github.com/spf13/cobra"
 )
@@ -12,8 +13,8 @@ func init() {
 var upgradeCmd = &cobra.Command{
 	Use: "upgrade",
 	Short: "",
-	Run: func(cmd *cobra.Command, args []string) {
-		node.Start()
-		//node.Upgrade()
+	RunE: func(cmd *cobra.Command, args []string) error {
+		cfg, _ := config.LoadConfig()
+		return node.Upgrade(cfg)
 	},
 }

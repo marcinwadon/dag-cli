@@ -1,29 +1,43 @@
 key:
   path: .dag/test.p12
-  alias: test-alias
-  password: test-password
-seedlist:
-  path: .dag/seedlist.csv
+  alias: keyalias
+  password: password
 tessellation:
-  version: v0.27.0
+  version: v1.0.1
+external-ip: 127.0.0.1
 github:
   organization: Constellation-Labs
   repository: tessellation
   l0-filename: cl-node.jar
   l1-filename: cl-dag-l1.jar
+  seedlist-filename: mainnet-seedlist
 l0:
+  env: mainnet
   path: .dag/l0.jar
+  pid-path: .dag/l0.pid
+  seedlist-path: .dag/seedlist.csv
+  snapshots-path: .dag/snapshots
   java:
     xmx: 10G
+    xms: 1024M
+    xss: 394K
   load-balancer: https://l0-lb-testnet.constellationnetwork.io
   port:
     public: 9000
     p2p: 9001
     cli: 9002
 l1:
+  env: mainnet
   path: .dag/l1.jar
+  pid-path: .dag/l1.pid
+  l0-peer:
+    id: e2f4496e5872682d7a55aa06e507a58e96b5d48a5286bfdff7ed780fa464d9e789b2760ecd840f4cb3ee6e1c1d81b2ee844c88dbebf149b1084b7313eb680714
+    host: 13.57.186.140
+    port: 9000
   java:
     xmx: 4G
+    xms: 1024M
+    xss: 394K
   load-balancer: https://l1-lb-testnet.constellationnetwork.io
   port:
     public: 9010
