@@ -21,7 +21,7 @@ const (
 
 var ValidStatuses = [...]NodeState{Initial, ReadyToJoin, LoadingGenesis, GenesisReady, StartingSession, SessionStarted, Ready, Leaving, Offline, Unknown, Observing, Undefined}
 
-func StateFromString(in string) NodeState {
+func ParseString(in string) NodeState {
 	for _, v := range ValidStatuses {
 		if in == fmt.Sprint(v) {
 			return v
@@ -29,33 +29,4 @@ func StateFromString(in string) NodeState {
 	}
 
 	return Unknown
-}
-
-type Addr struct {
-	Ip   string `json:"ip"`
-	Port int    `json:"publicPort"`
-}
-
-type PeerInfo struct {
-	Id         string `json:"id"`
-	Ip         string `json:"ip"`
-	PublicPort int    `json:"publicPort"`
-	P2PPort    int    `json:"p2pPort"`
-	Session    string `json:"session"`
-	State      string `json:"state"`
-
-	cardinalState NodeState
-}
-type ClusterInfo struct {
-	Id    string
-	Peers *Peers
-}
-
-type Peers []PeerInfo
-
-func (p *PeerInfo) Addr() Addr {
-	return Addr{
-		p.Ip,
-		p.PublicPort,
-	}
 }

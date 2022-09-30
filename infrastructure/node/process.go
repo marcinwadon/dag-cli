@@ -1,8 +1,9 @@
 package node
 
 import (
-	"dag-cli/pkg/config"
-	"dag-cli/pkg/layer"
+	"dag-cli/domain/layer"
+	"dag-cli/infrastructure/config"
+	"dag-cli/infrastructure/lb"
 	"dag-cli/pkg/pid"
 	"fmt"
 	"os"
@@ -25,11 +26,11 @@ func GetL0Command(cfg config.Config) []string {
 		"--ip",
 		cfg.ExternalIP,
 		"--public-port",
-		cfg.L0.Port.Public,
+		fmt.Sprintf("%d", cfg.L0.Port.Public),
 		"--p2p-port",
-		cfg.L0.Port.P2P,
+		fmt.Sprintf("%d", cfg.L0.Port.P2P),
 		"--cli-port",
-		cfg.L0.Port.CLI,
+		fmt.Sprintf("%d", cfg.L0.Port.CLI),
 	}
 }
 
@@ -56,17 +57,17 @@ func GetL1Command(cfg config.Config) []string {
 		"--ip",
 		cfg.ExternalIP,
 		"--public-port",
-		cfg.L1.Port.Public,
+		fmt.Sprintf("%d", cfg.L1.Port.Public),
 		"--p2p-port",
-		cfg.L1.Port.P2P,
+		fmt.Sprintf("%d", cfg.L1.Port.P2P),
 		"--cli-port",
-		cfg.L1.Port.CLI,
+		fmt.Sprintf("%d", cfg.L1.Port.CLI),
 		"--l0-peer-id",
 		cfg.L1.L0Peer.Id,
 		"--l0-peer-host",
 		cfg.L1.L0Peer.Host,
 		"--l0-peer-port",
-		cfg.L1.L0Peer.Port,
+		fmt.Sprintf("%d", cfg.L1.L0Peer.Port),
 	}
 }
 
@@ -164,6 +165,31 @@ func Stop(cfg config.Config, l layer.Layer) error {
 	}
 
 	err = p.Free()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func Join(cfg config.Config, l layer.Layer) error {
+	lbClient := lb.GetClient(cfg.L0.LoadBalancer)
+	if l == layer.L1 {
+		lbClient = lb.GetClient(cfg.L1.LoadBalancer)
+	}
+
+	randomPeer, err := lbClient.GetRandomReadyPeer()
+	if err != nil {
+		return err
+	}
+
+	host := "127.0.0.1"
+	nodeClient := GetClient(host, cfg.L0.Port.CLI)
+	if l == layer.L1 {
+		nodeClient = GetClient(host, cfg.L1.Port.CLI)
+	}
+
+	err = nodeClient.Join(randomPeer.Id, randomPeer.Ip, randomPeer.P2PPort)
 	if err != nil {
 		return err
 	}

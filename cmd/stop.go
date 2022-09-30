@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"dag-cli/pkg/config"
-	"dag-cli/pkg/layer"
-	"dag-cli/pkg/node"
+	"dag-cli/domain/layer"
+	"dag-cli/infrastructure/config"
+	"dag-cli/infrastructure/node"
 	"fmt"
 	"github.com/spf13/cobra"
 )
@@ -22,15 +22,15 @@ var stopCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("Stopping layer: %s...\n", layerToStop)
+		fmt.Printf("Stopping layer: %s...\n", *layerToStop)
 
 		cfg, _ := config.LoadConfig()
-		err = node.Stop(cfg, layerToStop)
+		err = node.Stop(cfg, *layerToStop)
 		if err != nil {
 			return err
 		}
 
-		fmt.Printf("Layer %s stopped\n", layerToStop)
+		fmt.Printf("Layer %s stopped\n", *layerToStop)
 		return nil
 	},
 }

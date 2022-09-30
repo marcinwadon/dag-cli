@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"dag-cli/pkg/config"
-	"dag-cli/pkg/node"
+	"dag-cli/infrastructure/config"
+	"dag-cli/infrastructure/node"
 	"github.com/spf13/cobra"
 )
 

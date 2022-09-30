@@ -29,15 +29,15 @@ type JavaConfig struct {
 }
 
 type PortConfig struct {
-	Public string
-	P2P    string
-	CLI    string
+	Public int
+	P2P    int
+	CLI    int
 }
 
 type L0Peer struct {
 	Id   string
 	Host string
-	Port string
+	Port int
 }
 
 type L0Config struct {
@@ -70,8 +70,11 @@ type Config struct {
 	L1           L1Config
 }
 
-func LoadConfig() (cfg Config, err error) {
+func LoadConfig() (Config, error) {
 	var C Config
-	err = viper.Unmarshal(&C)
+	err := viper.Unmarshal(&C)
+	if err != nil {
+		return C, err
+	}
 	return C, nil
 }

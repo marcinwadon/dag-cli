@@ -10,11 +10,11 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(startCmd)
+	rootCmd.AddCommand(joinCmd)
 }
 
-var startCmd = &cobra.Command{
-	Use:   "start [layer]",
+var joinCmd = &cobra.Command{
+	Use:   "join",
 	Short: "",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -23,15 +23,15 @@ var startCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("Starting layer: %s...\n", *layerToRun)
+		fmt.Printf("Joining layer: %s...\n", *layerToRun)
 
 		cfg, _ := config.LoadConfig()
-		err = node.Start(cfg, *layerToRun)
+		err = node.Join(cfg, *layerToRun)
 		if err != nil {
 			return err
 		}
 
-		fmt.Printf("Layer %s started\n", *layerToRun)
+		fmt.Printf("Layer %s joined\n", *layerToRun)
 		return nil
 	},
 }

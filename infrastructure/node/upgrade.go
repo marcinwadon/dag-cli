@@ -1,15 +1,15 @@
 package node
 
 import (
-	"dag-cli/pkg/config"
+	"dag-cli/infrastructure/config"
+	"dag-cli/infrastructure/github"
 	"dag-cli/pkg/fetch"
-	"dag-cli/pkg/github"
 )
 
 func UpgradeL0(cfg config.Config) (err error) {
 	version := cfg.Tessellation.Version
 
-	githubClient := github.GetDefaultClient()
+	githubClient := github.GetDefaultClient(cfg.Github)
 	url := githubClient.GetFetchURL(version, cfg.Github.L0Filename)
 
 	err = fetch.DownloadFile(cfg.L0.Path, url)
@@ -28,7 +28,7 @@ func UpgradeL0(cfg config.Config) (err error) {
 }
 
 func UpgradeL1(cfg config.Config) (err error) {
-	githubClient := github.GetDefaultClient()
+	githubClient := github.GetDefaultClient(cfg.Github)
 	url := githubClient.GetFetchURL(cfg.Tessellation.Version, cfg.Github.L1Filename)
 
 	err = fetch.DownloadFile(cfg.L1.Path, url)
