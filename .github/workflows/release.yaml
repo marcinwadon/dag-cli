@@ -1,0 +1,57 @@
+on:
+  push:
+    tags:
+      - "v*"
+
+name: Release
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        goosarch:
+          - 'linux/386'
+          - 'linux/amd64'
+          - 'freebsd/386'
+          - 'freebsd/amd64'
+          - 'darwin/386'
+          - 'darwin/amd64'
+          - 'windows/386'
+          - 'windows/amd64'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "1.18"
+      - name: Get OS and arch info
+        run: |
+          GOOSARCH=${{matrix.goosarch}}
+          GOOS=${GOOSARCH%/*}
+          GOARCH=${GOOSARCH#*/}
+          BINARY_NAME=dag-cli-$GOOS-$GOARCH
+          echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
+          echo "GOOS=$GOOS" >> $GITHUB_ENV
+          echo "GOARCH=$GOARCH" >> $GITHUB_ENV
+      - name: Release Notes
+        run: |
+          git log $(git describe HEAD~ --tags --abbrev=0)..HEAD --pretty='format:* %h %s%n  * %an <%ae>' --no-merges >> ".github/RELEASE-TEMPLATE.md"
+      - name: Build
+        run: |
+          go build -o "$BINARY_NAME" -v
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: ".github/RELEASE-TEMPLATE.md"
+          draft: true
+          files: ${{env.BINARY_NAME}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
