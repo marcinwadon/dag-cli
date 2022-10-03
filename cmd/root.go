@@ -12,7 +12,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:     "dag",
 		Short:   "DAG Command Line Utility",
-		Version: "0.1.0",
+		Version: "0.2.0",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			fmt.Println("status")
 
