@@ -2,7 +2,7 @@ package node
 
 import (
 	"bytes"
-	node2 "dag-cli/domain/node"
+	"dag-cli/domain/node"
 	"dag-cli/pkg/api"
 	"encoding/json"
 	"fmt"
@@ -18,14 +18,14 @@ func (nd *nd) getEndpoint(endpoint string) string {
 	return fmt.Sprintf("http://%s:%d/%s", nd.host, nd.port, endpoint)
 }
 
-func (nd *nd) GetNodeInfo() (*node2.NodeInfo, error) {
+func (nd *nd) GetNodeInfo() (*node.NodeInfo, error) {
 	resp, err := http.Get(nd.getEndpoint("node/info"))
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	var nodeInfo node2.NodeInfo
+	var nodeInfo node.NodeInfo
 	if err := json.NewDecoder(resp.Body).Decode(&nodeInfo); err != nil {
 		return nil, err
 	}
@@ -35,8 +35,8 @@ func (nd *nd) GetNodeInfo() (*node2.NodeInfo, error) {
 
 func (nd nd) Join(id string, host string, p2pPort int) error {
 	body, _ := json.Marshal(map[string]any{
-		"id": id,
-		"ip": host,
+		"id":      id,
+		"ip":      host,
 		"p2pPort": p2pPort,
 	})
 	requestBody := bytes.NewBuffer(body)
@@ -53,6 +53,6 @@ func (nd nd) Join(id string, host string, p2pPort int) error {
 	return nil
 }
 
-func GetClient(host string, port int) node2.NodeClient {
+func GetClient(host string, port int) node.NodeClient {
 	return &nd{host: host, port: port}
 }

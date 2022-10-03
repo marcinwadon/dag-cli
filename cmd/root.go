@@ -10,8 +10,8 @@ import (
 
 var (
 	rootCmd = &cobra.Command{
-		Use:   "dag",
-		Short: "DAG Command Line Utility",
+		Use:     "dag",
+		Short:   "DAG Command Line Utility",
 		Version: "0.1.0",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			fmt.Println("status")
@@ -19,6 +19,7 @@ var (
 			return nil
 		},
 	}
+	Verbose bool
 )
 
 func Execute() error {
@@ -31,6 +32,8 @@ func Execute() error {
 }
 
 func init() {
+	rootCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
+	_ = viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
 	cobra.OnInitialize(initConfig)
 }
 

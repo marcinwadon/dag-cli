@@ -7,6 +7,7 @@ import (
 	"dag-cli/pkg/pid"
 	"fmt"
 	"os"
+	"strings"
 	"syscall"
 )
 
@@ -128,6 +129,10 @@ func Start(cfg config.Config, l layer.Layer) error {
 		command = GetL1Command(cfg)
 	}
 
+	if cfg.Verbose {
+		fmt.Printf("Start command:\n%s\n", strings.Join(command, " "))
+	}
+
 	process, err := os.StartProcess(command[0], command, &attr)
 	if err != nil {
 		return err
@@ -192,6 +197,10 @@ func Join(cfg config.Config, l layer.Layer) error {
 	nodeClient := GetClient(host, cfg.L0.Port.CLI)
 	if l == layer.L1 {
 		nodeClient = GetClient(host, cfg.L1.Port.CLI)
+	}
+
+	if cfg.Verbose {
+		fmt.Printf("Joining to: %s:%d (id: %s)\n", randomPeer.Ip, randomPeer.P2PPort, randomPeer.Id)
 	}
 
 	err = nodeClient.Join(randomPeer.Id, randomPeer.Ip, randomPeer.P2PPort)

@@ -11,7 +11,7 @@ import (
 )
 
 type PID struct {
-	PID int `json:"pid"`
+	PID  int `json:"pid"`
 	path string
 }
 

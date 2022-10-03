@@ -62,6 +62,7 @@ type L1Config struct {
 }
 
 type Config struct {
+	Verbose      bool
 	Key          KeyConfig
 	Tessellation TessellationConfig
 	ExternalIP   string `mapstructure:"external-ip"`

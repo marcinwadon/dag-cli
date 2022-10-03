@@ -13,9 +13,9 @@ func init() {
 }
 
 var stopCmd = &cobra.Command{
-	Use: "stop [layer]",
+	Use:   "stop [layer]",
 	Short: "",
-	Args: cobra.ExactArgs(1),
+	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		layerToStop, err := layer.ParseString(args[0])
 		if err != nil {
