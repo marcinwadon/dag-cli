@@ -105,6 +105,11 @@ func Start(cfg config.Config, l layer.Layer) error {
 
 	_ = os.MkdirAll(dir, os.ModePerm)
 
+	var sysproc = &syscall.SysProcAttr{
+		Credential: nil,
+		Noctty:     true,
+	}
+
 	var attr = os.ProcAttr{
 		Dir: dir,
 		Env: env,
@@ -113,7 +118,7 @@ func Start(cfg config.Config, l layer.Layer) error {
 			os.Stdout,
 			os.Stderr,
 		},
-		Sys: nil,
+		Sys: sysproc,
 	}
 
 	var command []string
