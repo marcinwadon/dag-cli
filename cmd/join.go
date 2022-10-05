@@ -5,7 +5,6 @@ import (
 	"dag-cli/infrastructure/config"
 	"dag-cli/infrastructure/node"
 	"fmt"
-
 	"github.com/spf13/cobra"
 )
 

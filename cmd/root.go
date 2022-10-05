@@ -45,8 +45,6 @@ func initConfig() {
 	viper.AddConfigPath(".dag")
 	viper.AddConfigPath(".")
 
-	viper.AutomaticEnv()
-
 	err := viper.ReadInConfig()
 	cobra.CheckErr(err)
 }

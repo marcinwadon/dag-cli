@@ -12,14 +12,14 @@ func UpgradeL0(cfg config.Config) (err error) {
 	githubClient := github.GetDefaultClient(cfg.Github)
 	url := githubClient.GetFetchURL(version, cfg.Github.L0Filename)
 
-	err = fetch.DownloadFile(cfg.L0.Path, url)
+	err = fetch.DownloadFile(cfg.GetL0JarFilename(), url)
 	if err != nil {
 		return err
 	}
 
 	seedlistUrl := githubClient.GetFetchURL(version, cfg.Github.SeedlistFilename)
 
-	err = fetch.DownloadFile(cfg.L0.SeedlistPath, seedlistUrl)
+	err = fetch.DownloadFile(cfg.GetL0SeedlistFilename(), seedlistUrl)
 	if err != nil {
 		return err
 	}
@@ -31,7 +31,7 @@ func UpgradeL1(cfg config.Config) (err error) {
 	githubClient := github.GetDefaultClient(cfg.Github)
 	url := githubClient.GetFetchURL(cfg.Tessellation.Version, cfg.Github.L1Filename)
 
-	err = fetch.DownloadFile(cfg.L1.Path, url)
+	err = fetch.DownloadFile(cfg.GetL1JarFilename(), url)
 	if err != nil {
 		return err
 	}

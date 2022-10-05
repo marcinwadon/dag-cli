@@ -18,12 +18,12 @@ func GetL0Command(cfg config.Config) []string {
 		fmt.Sprintf("-Xmx%s", cfg.L0.Java.Xmx),
 		fmt.Sprintf("-Xss%s", cfg.L0.Java.Xss),
 		"-jar",
-		cfg.L0.Path,
+		cfg.GetL0JarFilename(),
 		"run-validator",
 		"--seedlist",
-		cfg.L0.SeedlistPath,
+		cfg.GetL0SeedlistFilename(),
 		"--env",
-		cfg.L0.Env,
+		cfg.Env,
 		"--ip",
 		cfg.ExternalIP,
 		"--public-port",
@@ -51,10 +51,10 @@ func GetL1Command(cfg config.Config) []string {
 		fmt.Sprintf("-Xmx%s", cfg.L0.Java.Xmx),
 		fmt.Sprintf("-Xss%s", cfg.L0.Java.Xss),
 		"-jar",
-		cfg.L1.Path,
+		cfg.GetL1JarFilename(),
 		"run-validator",
 		"--env",
-		cfg.L1.Env,
+		cfg.Env,
 		"--ip",
 		cfg.ExternalIP,
 		"--public-port",
@@ -84,9 +84,9 @@ func Start(cfg config.Config, l layer.Layer) error {
 	var p *pid.PID
 
 	if l == layer.L0 {
-		p = pid.New(cfg.L0.PidPath)
+		p = pid.New(cfg.GetL0PidFilename())
 	} else {
-		p = pid.New(cfg.L1.PidPath)
+		p = pid.New(cfg.GetL1PidFilename())
 	}
 
 	err := p.Load()
@@ -155,9 +155,9 @@ func Stop(cfg config.Config, l layer.Layer) error {
 	var p *pid.PID
 
 	if l == layer.L0 {
-		p = pid.New(cfg.L0.PidPath)
+		p = pid.New(cfg.GetL0PidFilename())
 	} else {
-		p = pid.New(cfg.L1.PidPath)
+		p = pid.New(cfg.GetL1PidFilename())
 	}
 
 	if err := p.Load(); err != nil {
