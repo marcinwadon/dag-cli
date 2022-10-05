@@ -51,7 +51,7 @@ func (lb *loadbalancer) GetRandomReadyPeer() (*node2.PeerInfo, error) {
 	rand.Seed(time.Now().Unix())
 	n := rand.Int() % len(readyPeers)
 
-	return &peers[n], nil
+	return &readyPeers[n], nil
 }
 
 func GetClient(url string) lb.LoadBalancer {
