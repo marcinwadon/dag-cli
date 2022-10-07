@@ -4,7 +4,9 @@ import (
 	"dag-cli/domain/layer"
 	"dag-cli/infrastructure/config"
 	"dag-cli/infrastructure/node"
+	"errors"
 	"fmt"
+	"github.com/rogpeppe/go-internal/semver"
 	"github.com/spf13/cobra"
 )
 
@@ -22,9 +24,15 @@ var startCmd = &cobra.Command{
 			return err
 		}
 
+		cfg, _ := config.LoadConfig()
+
+		if !semver.IsValid(cfg.Tessellation.Version) {
+			return errors.New("invalid tessellation version; run upgrade")
+		}
+
 		fmt.Printf("Starting layer: %s...\n", *layerToRun)
 
-		cfg, _ := config.LoadConfig()
+
 		err = node.Start(cfg, *layerToRun)
 		if err != nil {
 			return err

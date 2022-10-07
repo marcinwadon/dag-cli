@@ -2,11 +2,13 @@ package node
 
 import (
 	"dag-cli/domain/layer"
+	"dag-cli/domain/node"
 	"dag-cli/infrastructure/config"
 	"dag-cli/infrastructure/lb"
 	"dag-cli/pkg/pid"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"syscall"
 )
@@ -44,12 +46,12 @@ func GetL0Env(cfg config.Config) []string {
 	}, os.Environ()...)
 }
 
-func GetL1Command(cfg config.Config) []string {
+func GetL1Command(cfg config.Config, l0Peer node.L0Peer) []string {
 	return []string{
 		"/usr/bin/java",
-		fmt.Sprintf("-Xms%s", cfg.L0.Java.Xms),
-		fmt.Sprintf("-Xmx%s", cfg.L0.Java.Xmx),
-		fmt.Sprintf("-Xss%s", cfg.L0.Java.Xss),
+		fmt.Sprintf("-Xms%s", cfg.L1.Java.Xms),
+		fmt.Sprintf("-Xmx%s", cfg.L1.Java.Xmx),
+		fmt.Sprintf("-Xss%s", cfg.L1.Java.Xss),
 		"-jar",
 		cfg.GetL1JarFilename(),
 		"run-validator",
@@ -64,11 +66,11 @@ func GetL1Command(cfg config.Config) []string {
 		"--cli-port",
 		fmt.Sprintf("%d", cfg.L1.Port.CLI),
 		"--l0-peer-id",
-		cfg.L1.L0Peer.Id,
+		l0Peer.Id,
 		"--l0-peer-host",
-		cfg.L1.L0Peer.Host,
+		l0Peer.Host,
 		"--l0-peer-port",
-		fmt.Sprintf("%d", cfg.L1.L0Peer.Port),
+		fmt.Sprintf("%d", l0Peer.Port),
 	}
 }
 
@@ -99,25 +101,31 @@ func Start(cfg config.Config, l layer.Layer) error {
 		env = GetL1Env(cfg)
 	}
 
-	dir := "l0"
+	name := "l0"
 	if l == layer.L1 {
-		dir = "l1"
+		name = "l1"
 	}
 
-	_ = os.MkdirAll(dir, os.ModePerm)
+	_ = os.MkdirAll(name, os.ModePerm)
 
 	var sysproc = &syscall.SysProcAttr{
 		Credential: nil,
 		Noctty:     true,
 	}
 
+	filename := filepath.Join(cfg.WorkingDir, fmt.Sprintf("%s.log", name))
+	temp, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+
 	var attr = os.ProcAttr{
-		Dir: dir,
+		Dir: name,
 		Env: env,
 		Files: []*os.File{
 			os.Stdin,
-			os.Stdout,
-			os.Stderr,
+			temp,
+			temp,
 		},
 		Sys: sysproc,
 	}
@@ -126,7 +134,25 @@ func Start(cfg config.Config, l layer.Layer) error {
 	if l == layer.L0 {
 		command = GetL0Command(cfg)
 	} else {
-		command = GetL1Command(cfg)
+		var l0Peer node.L0Peer
+		if cfg.L1.L0Peer.Discovery {
+			lbClient := lb.GetClient(cfg.L0.LoadBalancer)
+
+			peer, err := lbClient.GetRandomReadyPeer()
+			if err != nil {
+				return err
+			}
+
+			l0Peer = node.L0PeerFromPeerInfo(*peer)
+		} else {
+			l0Peer = node.L0Peer{
+				Id:   cfg.L1.L0Peer.Id,
+				Host: cfg.L1.L0Peer.Host,
+				Port: cfg.L1.L0Peer.Port,
+			}
+		}
+
+		command = GetL1Command(cfg, l0Peer)
 	}
 
 	if cfg.Verbose {

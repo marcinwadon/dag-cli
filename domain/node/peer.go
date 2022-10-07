@@ -20,3 +20,17 @@ func (p *PeerInfo) Addr() Addr {
 		p.PublicPort,
 	}
 }
+
+type L0Peer struct {
+	Id   string
+	Host string
+	Port int
+}
+
+func L0PeerFromPeerInfo(peer PeerInfo) L0Peer {
+	return L0Peer{
+		Id:   peer.Id,
+		Host: peer.Ip,
+		Port: peer.PublicPort,
+	}
+}

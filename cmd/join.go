@@ -4,6 +4,7 @@ import (
 	"dag-cli/domain/layer"
 	"dag-cli/infrastructure/config"
 	"dag-cli/infrastructure/node"
+	"dag-cli/pkg/pid"
 	"fmt"
 	"github.com/spf13/cobra"
 )
@@ -22,9 +23,16 @@ var joinCmd = &cobra.Command{
 			return err
 		}
 
+		cfg, _ := config.LoadConfig()
+
+		p := pid.New(cfg.GetL0PidFilename())
+		err = p.Load()
+		if err != nil {
+			return err
+		}
+
 		fmt.Printf("Joining layer: %s...\n", *layerToRun)
 
-		cfg, _ := config.LoadConfig()
 		err = node.Join(cfg, *layerToRun)
 		if err != nil {
 			return err

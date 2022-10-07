@@ -6,9 +6,7 @@ import (
 	"dag-cli/pkg/fetch"
 )
 
-func UpgradeL0(cfg config.Config) (err error) {
-	version := cfg.Tessellation.Version
-
+func UpgradeL0(cfg config.Config, version string) (err error) {
 	githubClient := github.GetDefaultClient(cfg.Github)
 	url := githubClient.GetFetchURL(version, cfg.Github.L0Filename)
 
@@ -24,12 +22,14 @@ func UpgradeL0(cfg config.Config) (err error) {
 		return err
 	}
 
+	_ = cfg.Persist()
+
 	return nil
 }
 
-func UpgradeL1(cfg config.Config) (err error) {
+func UpgradeL1(cfg config.Config, version string) (err error) {
 	githubClient := github.GetDefaultClient(cfg.Github)
-	url := githubClient.GetFetchURL(cfg.Tessellation.Version, cfg.Github.L1Filename)
+	url := githubClient.GetFetchURL(version, cfg.Github.L1Filename)
 
 	err = fetch.DownloadFile(cfg.GetL1JarFilename(), url)
 	if err != nil {
@@ -39,16 +39,19 @@ func UpgradeL1(cfg config.Config) (err error) {
 	return nil
 }
 
-func Upgrade(cfg config.Config) (err error) {
-	err = UpgradeL0(cfg)
+func Upgrade(cfg config.Config, version string) (err error) {
+	err = UpgradeL0(cfg, version)
 	if err != nil {
 		return err
 	}
 
-	err = UpgradeL1(cfg)
+	err = UpgradeL1(cfg, version)
 	if err != nil {
 		return err
 	}
+
+	cfg.Tessellation.Version = version
+	_ = cfg.Persist()
 
 	return nil
 }
