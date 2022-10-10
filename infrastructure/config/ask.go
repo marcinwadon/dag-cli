@@ -49,6 +49,12 @@ func (ac *Autoconfig) AskExternalIP(current string) string {
 	return ask
 }
 
+func (ac *Autoconfig) AskBlockExplorer(current string) string {
+	ask := ac.Ask("Block-explorer URL", current)
+
+	return ask
+}
+
 func (ac *Autoconfig) AskGithub(current GithubConfig) GithubConfig {
 	org := ac.Ask("Organization", current.Organization)
 	repo := ac.Ask("Repository", current.Repository)

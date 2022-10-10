@@ -3,6 +3,7 @@ package cmd
 import (
 	"dag-cli/domain/layer"
 	"dag-cli/infrastructure/config"
+	"dag-cli/infrastructure/lb"
 	"dag-cli/infrastructure/node"
 	"errors"
 	"fmt"
@@ -10,8 +11,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var skipClusterCheck bool
+
 func init() {
 	rootCmd.AddCommand(startCmd)
+	startCmd.Flags().BoolVar(&skipClusterCheck, "skip-cluster-check", false, "skip checking cluster tessellation version")
 }
 
 var startCmd = &cobra.Command{
@@ -30,6 +34,13 @@ var startCmd = &cobra.Command{
 			return errors.New("invalid tessellation version; run upgrade")
 		}
 
+		if !skipClusterCheck {
+			err = checkClusterVersion(cfg, layerToRun)
+			if err != nil {
+				return err
+			}
+		}
+
 		fmt.Printf("Starting layer: %s...\n", *layerToRun)
 
 		err = node.Start(cfg, *layerToRun)
@@ -40,4 +51,28 @@ var startCmd = &cobra.Command{
 		fmt.Printf("Layer %s started\n", *layerToRun)
 		return nil
 	},
+}
+
+func checkClusterVersion(cfg config.Config, layerToRun *layer.Layer) error {
+	lbClient := lb.GetClient(cfg.L0.LoadBalancer)
+	if *layerToRun == layer.L1 {
+		lbClient = lb.GetClient(cfg.L1.LoadBalancer)
+	}
+
+	peer, err := lbClient.GetRandomReadyPeer()
+	if err != nil {
+		return err
+	}
+	nodeClient := node.GetClient(peer.Ip, peer.PublicPort)
+
+	nodeInfo, err := nodeClient.GetNodeInfo()
+	if err != nil {
+		return err
+	}
+
+	if nodeInfo.Version != cfg.Tessellation.Version {
+		return fmt.Errorf("cluster version: v%s does not match the local version: %s", nodeInfo.Version, cfg.Tessellation.Version)
+	}
+
+	return nil
 }

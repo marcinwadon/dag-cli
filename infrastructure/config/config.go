@@ -103,15 +103,16 @@ func (cfg *L1Config) Show() {
 }
 
 type Config struct {
-	Env          string
-	Verbose      bool
-	WorkingDir   string `mapstructure:"working-directory"`
-	Key          KeyConfig
-	Tessellation TessellationConfig
-	ExternalIP   string `mapstructure:"external-ip"`
-	Github       GithubConfig
-	L0           L0Config
-	L1           L1Config
+	Env           string
+	BlockExplorer string `mapstructure:"block-explorer"`
+	Verbose       bool
+	WorkingDir    string `mapstructure:"working-directory"`
+	Key           KeyConfig
+	Tessellation  TessellationConfig
+	ExternalIP    string `mapstructure:"external-ip"`
+	Github        GithubConfig
+	L0            L0Config
+	L1            L1Config
 }
 
 func (cfg *Config) GetL0JarFilename() string {
@@ -135,6 +136,7 @@ func (cfg *Config) Show() {
 	fmt.Printf("Environment: %s\n", color.Ize(color.Green, cfg.Env))
 	fmt.Printf("Working dir: %s\n", color.Ize(color.Green, cfg.WorkingDir))
 	fmt.Printf("External IP: %s\n", color.Ize(color.Green, cfg.ExternalIP))
+	fmt.Printf("Block explorer: %s\n", color.Ize(color.Green, cfg.BlockExplorer))
 	cfg.Key.Show()
 	cfg.Github.Show()
 	cfg.L0.Show()
@@ -157,6 +159,7 @@ func (cfg *Config) Persist() error {
 	viper.Set("env", cfg.Env)
 	viper.Set("working-directory", cfg.WorkingDir)
 	viper.Set("external-ip", cfg.ExternalIP)
+	viper.Set("block-explorer", cfg.BlockExplorer)
 	viper.Set("tessellation.version", cfg.Tessellation.Version)
 	viper.Set("key.path", cfg.Key.Path)
 	viper.Set("key.alias", cfg.Key.Alias)
@@ -194,6 +197,7 @@ func DefaultMainnet() Config {
 		Env:          "mainnet",
 		Verbose:      false,
 		WorkingDir:   "./",
+		BlockExplorer: "be-mainnet.constellationnetwork.io",
 		Key:          KeyConfig{Path: "./key.p12", Alias: "alias", Password: ""},
 		Tessellation: TessellationConfig{Version: ""},
 		ExternalIP:   "",
@@ -243,6 +247,7 @@ func DefaultTestnet() Config {
 		Env:          "testnet",
 		Verbose:      false,
 		WorkingDir:   "./",
+		BlockExplorer: "be-testnet.constellationnetwork.io",
 		Key:          KeyConfig{Path: "./key.p12", Alias: "alias", Password: ""},
 		Tessellation: TessellationConfig{Version: ""},
 		ExternalIP:   "",

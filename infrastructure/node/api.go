@@ -33,7 +33,7 @@ func (nd *nd) GetNodeInfo() (*node.NodeInfo, error) {
 	return &nodeInfo, nil
 }
 
-func (nd nd) Join(id string, host string, p2pPort int) error {
+func (nd *nd) Join(id string, host string, p2pPort int) error {
 	body, _ := json.Marshal(map[string]any{
 		"id":      id,
 		"ip":      host,
@@ -53,7 +53,7 @@ func (nd nd) Join(id string, host string, p2pPort int) error {
 	return nil
 }
 
-func (nd nd) Leave() error {
+func (nd *nd) Leave() error {
 	body := bytes.NewBuffer([]byte{})
 	resp, err := http.Post(nd.getEndpoint("cluster/leave"), api.ApplicationJson, body)
 	if err != nil {

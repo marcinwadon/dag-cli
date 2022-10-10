@@ -43,6 +43,7 @@ var configureCmd = &cobra.Command{
 
 		tmpConfig.WorkingDir = ac.AskWorkingDir(tmpConfig.WorkingDir)
 		tmpConfig.ExternalIP = ac.AskExternalIP(tmpConfig.ExternalIP)
+		tmpConfig.BlockExplorer = ac.AskBlockExplorer(tmpConfig.BlockExplorer)
 
 		fmt.Printf("-- Key configuration -- \n")
 		tmpConfig.Key = ac.AskKey(tmpConfig.Key)
