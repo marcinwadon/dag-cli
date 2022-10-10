@@ -15,7 +15,7 @@ func init() {
 var upgradeCmd = &cobra.Command{
 	Use:   "upgrade",
 	Short: "",
-	Args: cobra.ExactArgs(1),
+	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg, _ := config.LoadConfig()
 

@@ -88,8 +88,8 @@ func (ac *Autoconfig) AskPorts(current PortConfig) PortConfig {
 
 	return PortConfig{
 		Public: public,
-		P2P: p2p,
-		CLI: cli,
+		P2P:    p2p,
+		CLI:    cli,
 	}
 }
 
@@ -146,9 +146,9 @@ func (ac *Autoconfig) AskL1(current L1Config) L1Config {
 	l0peer := ac.AskL0Peer(current.L0Peer)
 
 	return L1Config{
-		L0Peer:		   l0peer,
-		Java:          java,
-		LoadBalancer:  lb,
-		Port:          ports,
+		L0Peer:       l0peer,
+		Java:         java,
+		LoadBalancer: lb,
+		Port:         ports,
 	}
 }

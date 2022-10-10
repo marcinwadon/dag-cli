@@ -53,6 +53,20 @@ func (nd nd) Join(id string, host string, p2pPort int) error {
 	return nil
 }
 
+func (nd nd) Leave() error {
+	body := bytes.NewBuffer([]byte{})
+	resp, err := http.Post(nd.getEndpoint("cluster/leave"), api.ApplicationJson, body)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("an error occured when leaving the cluster")
+	}
+
+	return nil
+}
+
 func GetClient(host string, port int) node.NodeClient {
 	return &nd{host: host, port: port}
 }

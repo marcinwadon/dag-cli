@@ -15,7 +15,7 @@ func init() {
 }
 
 var configureCmd = &cobra.Command{
-	Use: "configure",
+	Use:   "configure",
 	Short: "Configure your node",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		advanced, _ := cmd.Flags().GetBool("advanced")

@@ -32,7 +32,6 @@ var startCmd = &cobra.Command{
 
 		fmt.Printf("Starting layer: %s...\n", *layerToRun)
 
-
 		err = node.Start(cfg, *layerToRun)
 		if err != nil {
 			return err
