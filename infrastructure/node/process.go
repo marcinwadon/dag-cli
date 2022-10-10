@@ -119,8 +119,10 @@ func Start(cfg config.Config, l layer.Layer) error {
 		return err
 	}
 
+	dirname := filepath.Join(cfg.WorkingDir, name)
+
 	var attr = os.ProcAttr{
-		Dir: name,
+		Dir: dirname,
 		Env: env,
 		Files: []*os.File{
 			os.Stdin,
