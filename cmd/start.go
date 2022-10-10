@@ -11,11 +11,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var skipClusterCheck bool
+var skipVersionCheck bool
 
 func init() {
 	rootCmd.AddCommand(startCmd)
-	startCmd.Flags().BoolVar(&skipClusterCheck, "skip-cluster-check", false, "skip checking cluster tessellation version")
+	startCmd.Flags().BoolVar(&skipVersionCheck, "skip-version-check", false, "skip checking cluster tessellation version")
 }
 
 var startCmd = &cobra.Command{
@@ -34,7 +34,7 @@ var startCmd = &cobra.Command{
 			return errors.New("invalid tessellation version; run upgrade")
 		}
 
-		if !skipClusterCheck {
+		if !skipVersionCheck {
 			err = checkClusterVersion(cfg, layerToRun)
 			if err != nil {
 				return err
@@ -70,7 +70,7 @@ func checkClusterVersion(cfg config.Config, layerToRun *layer.Layer) error {
 		return err
 	}
 
-	if nodeInfo.Version != cfg.Tessellation.Version {
+	if fmt.Sprintf("v%s", nodeInfo.Version) != cfg.Tessellation.Version {
 		return fmt.Errorf("cluster version: v%s does not match the local version: %s", nodeInfo.Version, cfg.Tessellation.Version)
 	}
 
