@@ -10,8 +10,24 @@ import (
 
 func init() {
 	rootCmd.AddCommand(configureCmd)
+	configureCmd.AddCommand(showCmd)
 	configureCmd.Flags().Bool("advanced", false, "Advanced configuration")
 	configureCmd.Flags().Bool("reset", false, "Reset existing configuration")
+}
+
+var showCmd = &cobra.Command{
+	Use: "show",
+	Short: "",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		currentConfig, err := config.LoadConfig()
+		if err != nil {
+			return err
+		}
+
+		currentConfig.Show()
+
+		return nil
+	},
 }
 
 var configureCmd = &cobra.Command{

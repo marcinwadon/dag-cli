@@ -3,7 +3,6 @@ package config
 import (
 	"dag-cli/pkg/color"
 	"fmt"
-	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"path/filepath"
 )
@@ -146,9 +145,7 @@ func (cfg *Config) Show() {
 
 func LoadConfig() (Config, error) {
 	var C Config
-	err := viper.Unmarshal(&C, func(config *mapstructure.DecoderConfig) {
-		config.ErrorUnset = true
-	})
+	err := viper.Unmarshal(&C)
 	if err != nil {
 		return C, err
 	}
