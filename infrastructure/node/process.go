@@ -192,20 +192,16 @@ func Stop(cfg config.Config, l layer.Layer) error {
 		return fmt.Errorf("no PID file exists at %s; process not running?", p.Path())
 	}
 
-	proc, err := os.FindProcess(p.PID)
+	err := p.Kill()
 	if err != nil {
 		return err
 	}
 
-	err = proc.Signal(syscall.SIGTERM)
-	if err != nil {
-		return err
-	}
-
-	err = p.Free()
-	if err != nil {
-		return err
-	}
+	// TODO: do not remove pid file unless make sure process is not running
+	//err = p.Free()
+	//if err != nil {
+	//	return err
+	//}
 
 	return nil
 }
