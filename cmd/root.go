@@ -18,7 +18,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:     "dag",
 		Short:   "DAG Command Line Utility",
-		Version: "v0.7.0",
+		Version: "v0.7.1",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := config.LoadConfig()
 			if err != nil {
@@ -39,7 +39,14 @@ var (
 			} else {
 				l0Lb := lb.GetClient(cfg.L0.LoadBalancer)
 
-				fmt.Printf("Node state: %s\n", getNodeState(nodeInfo.State))
+				fmt.Printf("Node state (local): %s\n", getNodeState(nodeInfo.State))
+
+				info, err := l0Lb.FindPeerById(nodeInfo.Id)
+				if err != nil {
+					fmt.Printf("Node state (lb): %s\n", color.Ize(color.Red, "node not found"))
+				} else {
+					fmt.Printf("Node state (lb): %s\n", getNodeState(info.State))
+				}
 
 				randomPeer, err := l0Lb.GetRandomReadyPeer()
 				if err != nil {
@@ -57,13 +64,6 @@ var (
 				uptime := time.Unix(nodeInfo.Session / int64(time.Microsecond), 0)
 				fmt.Printf("Uptime: %s (%s)\n", color.Ize(color.Yellow, fmt.Sprintf("%s", now.Sub(uptime))), color.Ize(color.Yellow, uptime.Format(time.RFC822)))
 
-				info, err := l0Lb.FindPeerById(nodeInfo.Id)
-				if err != nil {
-					fmt.Printf("%s\n", color.Ize(color.Red, "Peer not found on load-balancer"))
-				} else {
-					fmt.Printf("Load-balancer: %s\n", getNodeState(info.State))
-				}
-
 			}
 
 			fmt.Printf("%s\n", color.Ize(color.Cyan, "\n--- Layer 1 ---"))
@@ -75,7 +75,14 @@ var (
 			} else {
 				l1Lb := lb.GetClient(cfg.L1.LoadBalancer)
 
-				fmt.Printf("Node state: %s\n", getNodeState(nodeInfo.State))
+				fmt.Printf("Node state (local): %s\n", getNodeState(nodeInfo.State))
+
+				info, err := l1Lb.FindPeerById(nodeInfo.Id)
+				if err != nil {
+					fmt.Printf("Node state (lb): %s\n", color.Ize(color.Red, "node not found"))
+				} else {
+					fmt.Printf("Node state (lb): %s\n", getNodeState(info.State))
+				}
 
 				randomPeer, err := l1Lb.GetRandomReadyPeer()
 				if err != nil {
@@ -93,12 +100,6 @@ var (
 				uptime := time.Unix(nodeInfo.Session / int64(time.Microsecond), 0)
 				fmt.Printf("Uptime: %s (%s)\n", color.Ize(color.Yellow, fmt.Sprintf("%s", now.Sub(uptime))), color.Ize(color.Yellow, uptime.Format(time.RFC822)))
 
-				info, err := l1Lb.FindPeerById(nodeInfo.Id)
-				if err != nil {
-					fmt.Printf("%s\n", color.Ize(color.Red, "Peer not found on load-balancer"))
-				} else {
-					fmt.Printf("Load-balancer: %s\n", getNodeState(info.State))
-				}
 
 			}
 
