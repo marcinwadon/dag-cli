@@ -18,7 +18,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:     "dag",
 		Short:   "DAG Command Line Utility",
-		Version: "v0.6.0",
+		Version: "v0.7.0",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := config.LoadConfig()
 			if err != nil {
