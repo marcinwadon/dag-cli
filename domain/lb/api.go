@@ -7,4 +7,6 @@ import (
 type LoadBalancer interface {
 	GetClusterInfo() ([]node.PeerInfo, error)
 	GetRandomReadyPeer() (*node.PeerInfo, error)
+	FindPeerByHostPort(host string, port int)  (*node.PeerInfo, error)
+	FindPeerById(id string) (*node.PeerInfo, error)
 }

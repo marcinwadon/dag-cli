@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type nd struct {
@@ -19,7 +20,10 @@ func (nd *nd) getEndpoint(endpoint string) string {
 }
 
 func (nd *nd) GetNodeInfo() (*node.NodeInfo, error) {
-	resp, err := http.Get(nd.getEndpoint("node/info"))
+	client := http.Client{
+		Timeout: 10 * time.Second,
+	}
+	resp, err := client.Get(nd.getEndpoint("node/info"))
 	if err != nil {
 		return nil, err
 	}

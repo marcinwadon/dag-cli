@@ -16,7 +16,10 @@ type loadbalancer struct {
 }
 
 func (lb *loadbalancer) GetClusterInfo() ([]node.PeerInfo, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/cluster/info", lb.url))
+	client := http.Client{
+		Timeout: 10 * time.Second,
+	}
+	resp, err := client.Get(fmt.Sprintf("%s/cluster/info", lb.url))
 	if err != nil {
 		return nil, err
 	}
@@ -52,6 +55,36 @@ func (lb *loadbalancer) GetRandomReadyPeer() (*node.PeerInfo, error) {
 	n := rand.Int() % len(readyPeers)
 
 	return &readyPeers[n], nil
+}
+
+func (lb *loadbalancer) FindPeerByHostPort(host string, port int) (*node.PeerInfo, error) {
+	peers, err := lb.GetClusterInfo()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, peer := range peers {
+		if peer.Ip == host && peer.PublicPort == port {
+			return &peer, nil
+		}
+	}
+
+	return nil, errors.New("peer not found")
+}
+
+func (lb *loadbalancer) FindPeerById(id string) (*node.PeerInfo, error) {
+	peers, err := lb.GetClusterInfo()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, peer := range peers {
+		if peer.Id == id {
+			return &peer, nil
+		}
+	}
+
+	return nil, errors.New("peer not found")
 }
 
 func GetClient(url string) lb.LoadBalancer {
